@@ -2,8 +2,14 @@
 
 > ![SObject Work Queue : How work is definied, enqueued and processed](https://dl.dropboxusercontent.com/u/240888/SObjectWorkQueueInfrastructure.png)
  
-## Features: ##
-- 
+## Design Criteria: ##
+- Must prevent Max 5 batch in parallel limit - We should never run into this limit with work that is processed over the queue.	 	 	 
+- The queue needs to be so generic that "work" on any type of database object needs to be enqueued.	 	 	 
+- Any type of modification of database objects need to be possible. This should be transparently handled by the queue.	 	 	 
+- Provide error diagnostics like Batch or better. 	 
+- Secures data integrity like Batch or better. Failures should not leave data in inconsistent state or user of the infrastructure should be able to handle them.	 	 	 
+- Support / Allow for locking: Single processors should decide whether or not a temporary locking of the records is needed and use a central locking mechanism less quirky than the current one.	 	 	 
+- Work that can be run synchronously, should not be queued and processed asynch.
 
 
 ## SObject Work Queue License ##
