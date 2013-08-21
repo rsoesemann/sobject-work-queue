@@ -1,8 +1,15 @@
 # SObject Work Queue #
 
-> ![SObject Work Queue : How work is definied, enqueued and processed](https://dl.dropboxusercontent.com/u/240888/SObjectWorkQueueInfrastructure.png)
- 
-## Design Criteria: ##
+Apex Batch is something like the last resort for Apex developers to circumvent limitations of the Salesforce Platform when working with "Large" data volumes.  When using Batch as the asynch backbone of a bigger system you soon find obvious drawbacks:
+
+- Jobs are put in a queue, but when that queue is full (Max. 5 concurrent batches), the job fails instead of being scheduled for later processing.
+- Jobs of different Batches might work and conflict on the same data. There is locking mechanism or a guaranteed order.
+- Poor support to handle party failed batch runs. Its really hard to find out where and why a single job failed and to restore data consitency.
+
+## Design Goals: ##
+
+We tried to build a custom queue that overcomes those drawbacks.
+
 - Must prevent Max 5 batch in parallel limit - We should never run into this limit with work that is processed over the queue.	 	 	 
 - The queue needs to be so generic that "work" on any type of database object needs to be enqueued.	 	 	 
 - Any type of modification of database objects need to be possible. This should be transparently handled by the queue.	 	 	 
@@ -11,6 +18,7 @@
 - Support / Allow for locking: Single processors should decide whether or not a temporary locking of the records is needed and use a central locking mechanism less quirky than the current one.	 	 	 
 - Work that can be run synchronously, should not be queued and processed asynch.
 
+> ![SObject Work Queue : How work is definied, enqueued and processed](https://dl.dropboxusercontent.com/u/240888/SObjectWorkQueueInfrastructure.png)
 
 ## SObject Work Queue License ##
 
