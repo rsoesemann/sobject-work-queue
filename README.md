@@ -20,6 +20,12 @@ We tried to build a custom queue that overcomes those drawbacks.
 
 > ![SObject Work Queue : How work is definied, enqueued and processed](https://dl.dropboxusercontent.com/u/240888/SObjectWorkQueueInfrastructure.png)
 
+## Architecture Highlights ##
+
+- A centralised (pseudo singleton) queue handles so called SObjectWork
+- SObjectWork is a 
+- Work is persited as regular Custom SObject in the database
+
 ## SObject Work Queue License ##
 
 Copyright (C) 2013 UP2GO International LLC
