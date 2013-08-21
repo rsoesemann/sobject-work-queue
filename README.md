@@ -20,11 +20,40 @@ We tried to build a custom queue that overcomes those drawbacks.
 
 > ![SObject Work Queue : How work is definied, enqueued and processed](https://dl.dropboxusercontent.com/u/240888/SObjectWorkQueueInfrastructure.png)
 
-## Architecture Highlights ##
+## Architectural Components ##
 
-- A centralised (pseudo singleton) queue handles so called SObjectWork
-- SObjectWork is a 
-- Work is persited as regular Custom SObject in the database
+- `interface SObjectProcessor` : Command interface to define a type of work that can be performed on a Set of Ids
+
+        public interface SObjectProcessor {
+          String getFullClassName();
+	        void setRecordIds(List<Id> recordIds);
+	        void setParameterObject(Object parameterObject);
+	        Boolean canRunSynchronously();
+	        void process(SObjectWork.LastSuccessfulId lastSuccesfulId);
+        }
+
+- `class SObjectWork` : Defines concrete work to do on which concrete Ids
+
+        List<Id> ids = ...;
+        Map<String, Object> paramsMap = new Map<String, Object>();
+        paramsMap.put('name', value);
+        SObjectProcessor processor = new SObjectWorkTestHelper.ExampleSObjectProcessor();
+        
+        SObjectWork work = new SObjectWork.Builder(oppsToProcess, processor).withParams(paramsMap).build();
+
+- `class SObjectWorkQueue` : singleton class to add work to the queue 
+
+        SObjectWorkQueue.addWork(work);
+
+- `SObject SObjectWork__c` : a Custom SObject that persits SObjectWork instances in the database for later processing
+- `class SObjectWorkSerializer` : converts an instance of SObjectWork into 1-n records of SObjectWork__c
+- `class SObjectWorkDeserializer`: converts SObjectWork__c records back to their memory representation SObjectWork
+
+## Usage ##
+
+For usage examples please see the test classes especially `SObjectWorkQueue_Test` and `SObjectWorkTestHelper`.
+
+
 
 ## SObject Work Queue License ##
 
