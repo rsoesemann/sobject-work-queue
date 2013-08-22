@@ -1,6 +1,7 @@
 # SObject Work Queue #
 
 > ![SObject Work Queue : How work is definied, enqueued and processed](https://dl.dropboxusercontent.com/u/240888/SObjectWorkQueueInfrastructure.png)
+UML created with PlantUML.com
  
 ## Design Criteria: ##
 - Must prevent Max 5 batch in parallel limit - We should never run into this limit with work that is processed over the queue.	 	 	 
