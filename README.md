@@ -3,7 +3,7 @@
 Apex Batch is something like the last resort for Apex developers to circumvent limitations of the Salesforce Platform when working with "Large" data volumes.  When using Batch as the asynch backbone of a bigger system you soon find obvious drawbacks:
 
 - Jobs are put in a queue, but when that queue is full (Max. 5 concurrent batches), the job fails instead of being scheduled for later processing.
-- Jobs of different Batches might work and conflict on the same data. There is locking mechanism or a guaranteed order.
+- Jobs of different Batches might work on the same data and produce conflicts. There is no locking mechanism or guaranteed order.
 - Poor support to handle party failed batch runs. Its really hard to find out where and why a single job failed and to restore data consitency.
 
 ## Design Goals: ##
