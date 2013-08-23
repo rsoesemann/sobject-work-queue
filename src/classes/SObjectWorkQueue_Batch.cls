@@ -118,7 +118,7 @@ public class SObjectWorkQueue_Batch implements Database.Batchable<SObjectWork__c
 	        String message = String.format('The following SObjectWork failed: {0}', new List<String>{urlToFailedWork});
 	        
 	        User triggeredByUser = [SELECT Name,Email FROM User WHERE Id = :UserInfo.getUserId()];
-	        sendEmail(triggeredByUser.Email, triggeredByUser.Email);
+	        sendEmail(triggeredByUser.Email, message);
     	}
     }
     
