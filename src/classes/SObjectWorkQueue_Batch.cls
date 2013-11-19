@@ -1,7 +1,7 @@
 public class SObjectWorkQueue_Batch implements Database.Batchable<SObjectWork__c>, Database.Stateful {
 
 	private SObjectWork__c failedRecord;
-	private SObjectWork.LastSuccessfulId lastSuccessfulId;
+	private SObjectWork.LastSuccessfulId lastSuccessfulId = new SObjectWork.LastSuccessfulId();
 
 
     public List<SObjectWork__c> start(Database.BatchableContext context) {
@@ -22,6 +22,8 @@ public class SObjectWorkQueue_Batch implements Database.Batchable<SObjectWork__c
         if(hasNewWork()) {
         	restart();
         }
+        
+        removeFinishedWorkFromQueue();
     }
     
     
@@ -51,12 +53,12 @@ public class SObjectWorkQueue_Batch implements Database.Batchable<SObjectWork__c
     	try {
     		markAsInProgress(workRecord);
     		completeWork(workRecord);	
+    		markAsDone(workRecord);
     	}
     	catch(Exception anyException) {
     		Database.rollback(sp);
     		markAsFailed(workRecord, anyException);
     	}
-    	markAsDone(workRecord);
     }
     
     
@@ -68,8 +70,6 @@ public class SObjectWorkQueue_Batch implements Database.Batchable<SObjectWork__c
     
     private void completeWork(SObjectWork__c workRecord) {
         SObjectWork work = SObjectWorkDeserializer.toObject(workRecord);
-        lastSuccessfulId = new SObjectWork.LastSuccessfulId();
-        
         work.processor.process(lastSuccessfulId);
     }
 
@@ -82,9 +82,10 @@ public class SObjectWorkQueue_Batch implements Database.Batchable<SObjectWork__c
     
     private void markAsFailed(SObjectWork__c workRecord, Exception ex) {
     	workRecord.pkl_CurrentState__c = SObjectWork.State.FAILED.name();
-    	workRecord.txt_LastSuccessfulId__c = lastSuccessfulId.get();
+		workRecord.txt_LastSuccessfulId__c = lastSuccessfulId.get();
     	workRecord.ltxt_FailedWithException__c = serializeException(ex);
     	workRecord.dtm_FailureTime__c = System.now();
+    	
     	update workRecord;
     	
     	failedRecord = workRecord;
@@ -98,7 +99,7 @@ public class SObjectWorkQueue_Batch implements Database.Batchable<SObjectWork__c
     
     
     private String serializeException(Exception ex) {
-    	String result = String.valueOf(ex);
+    	String result = ex.getMessage() + '\n\n' + ex.getStackTraceString();
     	Integer maxLength = SObjectWorkSerializer.LTXT_FIELD_LENGTH;
     	
     	if(result.length() > maxLength) {
@@ -114,27 +115,37 @@ public class SObjectWorkQueue_Batch implements Database.Batchable<SObjectWork__c
     	Boolean hadFailure = (failedRecord != null);
 
     	if(hadFailure) {
+    		String org = UserInfo.getOrganizationName().trim().length() == 0 ? UserInfo.getOrganizationId() : UserInfo.getOrganizationName();
+    		String user = UserInfo.getUserName().trim().length() == 0 ? UserInfo.getUserId() : UserInfo.getUserName();
+    		
+	        String title = String.format('{0} > {1} > {2} {3}', new List<String>{ org, user, failedRecord.txt_ProcessorClassName__c, failedRecord.pkl_CurrentState__c });
 	        String urlToFailedWork = System.URL.getSalesforceBaseUrl().toExternalForm()+'/' + failedRecord.Id;
-	        String message = String.format('The following SObjectWork failed: {0}', new List<String>{urlToFailedWork});
+	        String body = String.format('{0} \n\n {1}', new List<String>{ urlToFailedWork, failedRecord.ltxt_FailedWithException__c });
 	        
 	        User triggeredByUser = [SELECT Name,Email FROM User WHERE Id = :UserInfo.getUserId()];
-	        sendEmail(triggeredByUser.Email, message);
+	        sendEmail(triggeredByUser.Email, title, body);
     	}
     }
     
     
-    private void sendEmail(String toAddress, String message) {
+    private void sendEmail(String toAddress, String title, String body) {
     	List<String> addressList = new List<String>{ toAddress };
-    	 sendEmail(addressList, message);
+    	 sendEmail(addressList, title, body);
     }
     
     
-    private void sendEmail(List<String> toAddresses, String message) {
+    private void sendEmail(List<String> toAddresses, String title, String body) {
     	Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();  
     	mail.setToAddresses(toAddresses); 
-    	mail.setSubject(message);  
-        mail.setPlainTextBody(message);
+    	mail.setSubject(title);  
+        mail.setPlainTextBody(body);
          
         Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail }); 
     }
+    
+    
+	private void removeFinishedWorkFromQueue() {
+		List<SObjectWork__c> workMarkedAsDone = [SELECT Id FROM SObjectWork__c WHERE pkl_CurrentState__c = :SObjectWork.State.DONE.name()];
+		delete workMarkedAsDone;
+	}
 }

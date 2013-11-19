@@ -85,15 +85,44 @@ private class SObjectWorkSerializer_Test {
 		
 		
 		// Verify
-		System.assertNotEquals(null, deserializedWork.parameterObject);
+		System.assertNotEquals(null, deserializedWork.parameters);
 		
-		Map<String, Object> deserializedParams = (Map<String, Object>) deserializedWork.parameterObject;
-		for(String p : deserializedParams.keySet()) {
-			System.assertEquals(originalParams.get(p), deserializedParams.get(p), 'Parameter ' + p);
+		Map<String, Object> deserializedParams = deserializedWork.parameters;
+		for(String key : deserializedWork.parameters.keySet()) {
+			System.assertEquals(originalParams.get(key), deserializedWork.parameters.get(key), 'Parameter ' + key);
 		}
 	}
-    
-    
+	
+	
+	@isTest
+	private static void sObjectParametersMustBeHandledManually() {
+		
+		// Setup
+		final List<Id> ids = SObjectWorkTestHelper.createListOfValidIds(5);
+	    SObjectProcessor processor = new SObjectWorkTestHelper.ExampleSObjectProcessor();
+	    
+		Account a = new Account(Name='Acme Corp');
+		insert a;
+	    Map<String, Object> originalParams = new Map<String, Object>();
+		originalParams.put('SObject', JSON.serialize(a));
+		
+		SObjectWork work = new SObjectWork.Builder(ids, processor).withParams(originalParams).build();
+		
+		
+		// Execute
+		List<SObjectWork__c> records = SObjectWorkSerializer.toOneOrMoreSObjectRecords(work);
+        System.assertNotEquals(0, records.size());
+		SObjectWork deserializedWork = SObjectWorkDeserializer.toObject(records.get(0));
+		
+		
+		// Verify
+		System.assertNotEquals(null, deserializedWork.parameters);
+		String aJSON = (String) deserializedWork.parameters.get('SObject');
+		Account aRestored = (Account) JSON.deserialize(aJSON, Account.class);
+		System.assertEquals(a.Name, aRestored.Name);
+	}
+	
+	
     // TEST HELPER
     
     private static void assertEqualsIgnoreCaseSafety(String idCsv, String otherIdCsv) {

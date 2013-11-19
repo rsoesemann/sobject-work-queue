@@ -4,10 +4,10 @@ public abstract class SObjectWorkDeserializer {
     public static SObjectWork toObject(SObjectWork__c record) {
         List<Id> ids = convertToList(record.ltxt_SObjectIds__c);
         SObjectProcessor processor = getClassForName(record.txt_ProcessorClassName__c);
-        Object parameterObject = deserializeParameterObject(record.ltxt_ProcessorParamsAsJSON__c);
-        
-        SObjectWork result = (parameterObject == null) ? new SObjectWork.Builder(ids, processor).build() 
-        											   : new SObjectWork.Builder(ids, processor).withParams(parameterObject).build();
+        Map<String, Object> paramMap = deserializeParameters(record.ltxt_ProcessorParamsAsJSON__c);
+
+        SObjectWork result = (paramMap == null || paramMap.isEmpty()) ? new SObjectWork.Builder(ids, processor).build() 
+    											  					  : new SObjectWork.Builder(ids, processor).withParams(paramMap).build();
         return result;
     }
     
@@ -62,14 +62,14 @@ public abstract class SObjectWorkDeserializer {
     }
     
     
-    private static Object deserializeParameterObject(String parameterJSON) {
-    	Object parameterObject = null;
+    private static Map<String, Object> deserializeParameters(String parameterJSON) {
+    	Map<String, Object> parameters = null;
     	
     	if(parameterJSON != null && parameterJSON.trim().length() > 0) {
-    		parameterObject = JSON.deserializeUntyped(parameterJSON);
+    		parameters = (Map<String, Object>) JSON.deserializeUntyped(parameterJSON);
     	}
     	
-    	return parameterObject;
+    	return parameters;
     }
     
     

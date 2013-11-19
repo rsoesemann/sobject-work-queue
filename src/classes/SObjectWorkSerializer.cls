@@ -27,8 +27,8 @@ public abstract class SObjectWorkSerializer {
             newRecord.ltxt_SObjectIds__c = toCommaSeperatedString(idChunk);
             newRecord.txt_ProcessorClassName__c = work.processor.getFullClassName();
             
-            if(work.parameterObject != null) {
-            	newRecord.ltxt_ProcessorParamsAsJSON__c = serializeForLongTxtField(work.parameterObject);
+            if(!work.parameters.isEmpty()) {
+            	newRecord.ltxt_ProcessorParamsAsJSON__c = serializeForLongTxtField(work.parameters);
             }
             
             records.add(newRecord);
@@ -59,11 +59,11 @@ public abstract class SObjectWorkSerializer {
     }
     
     
-    private static String serializeForLongTxtField(Object parameterObject) {
-		String result = JSON.serialize(parameterObject);
+    private static String serializeForLongTxtField(Map<String, Object> parameters) {
+		String result = JSON.serialize(parameters);
 		
 		if(doesntFitInLongTxtField(result)) {
-			String message = String.format('Parameter object is to big to to be serialized as JSON into Long Text field : {0}', new List<String>{ String.valueOf(parameterObject) });
+			String message = String.format('Parameter object is to big to to be serialized as JSON into Long Text field : {0}', new List<String>{ String.valueOf(parameters) });
 			throw new SerializationException(message);
 		}
 		

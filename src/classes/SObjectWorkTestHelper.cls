@@ -83,13 +83,11 @@ public with sharing class SObjectWorkTestHelper {
             this.recordIds = recordIds;
         }
         
-        public void setParameterObject(Object parameterObject) {
-            Map<String, Object> params = (Map<String, Object>) parameterObject;
-            
-            failOnId = (Id) params.get('FailOnId');
-            newAmountValue = (Decimal) params.get('SetAmount');
-            canRunSynch = (Boolean) params.get('canRunSynch');
-            lockRecords = (Boolean) params.get('lockRecords');
+        public void setParameters(Map<String, Object> parameters) {
+            failOnId = (Id) parameters.get('FailOnId');
+            newAmountValue = (Decimal) parameters.get('SetAmount');
+            canRunSynch = (Boolean) parameters.get('canRunSynch');
+            lockRecords = (Boolean) parameters.get('lockRecords');
         }
         
         public void process(SObjectWork.LastSuccessfulId lastSuccessfulId) {

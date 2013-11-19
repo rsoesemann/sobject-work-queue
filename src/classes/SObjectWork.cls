@@ -2,7 +2,7 @@ public with sharing class SObjectWork {
 	
 	public List<Id> recordIds { get; private set; }
 	public SObjectProcessor processor { get; private set; }
-	public Object parameterObject { get; private set; }
+	public Map<String, Object> parameters { get; private set; }
 	public Boolean stopOnError { get; private set; }
 	
 	// Note: Made default constructor private to enforce use of Builder
@@ -32,16 +32,26 @@ public with sharing class SObjectWork {
 			work.processor = processor;
     		work.recordIds = recordIds;
 			work.processor.setRecordIds(recordIds);
+    		work.parameters = new Map<String, Object>();
 			work.stopOnError = false;
     	}
     	
     	
-    	public Builder withParams(Object parameterObject) {
-    		if(parameterObject == null) {
-    			throw new IllegalArgumentException('Parameter object cannot be null.');
+    	public Builder withParam(String key, Object value) {
+    		if(key == null || value == null) {
+    			throw new IllegalArgumentException('Parameter keys and values cannot be null.');
     		}
-    		work.parameterObject = parameterObject;
-			work.processor.setParameterObject(parameterObject);
+			work.parameters.put(key, value);
+			
+    		return this;
+    	}
+    	
+    	
+    	public Builder withParams(Map<String, Object> paramMap) {
+    		if(paramMap == null) {
+    			throw new IllegalArgumentException('Parameter map cannot be null.');
+    		}
+			work.parameters.putAll(paramMap);
 			
     		return this;
     	}
@@ -54,6 +64,7 @@ public with sharing class SObjectWork {
     	
     	
     	public SObjectWork build() {
+    		work.processor.setParameters(work.parameters);
     		return work;
     	}
     }

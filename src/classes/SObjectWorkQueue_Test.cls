@@ -66,13 +66,14 @@ private class SObjectWorkQueue_Test {
         
         // Setup
         final List<Id> oppsToProcess = insertOppsWithAmountZeroAndReturnIds(10);
-        
-        List<Id> pendingIds = SObjectWorkTestHelper.createListOfSameIds(SObjectWorkSerializer.MAX_IDS_PER_LTXT - 2);
-        pendingIds.addAll(new List<Id>{ oppsToProcess.get(3), oppsToProcess.get(7)});
+        List<Id> pendingIds = new List<Id>{ oppsToProcess.get(3), oppsToProcess.get(7) };
         persistWorkWithStateAndIds(SObjectWork.State.QUEUED, pendingIds);
+        
+        SObjectProcessor processor = new SObjectWorkTestHelper.ExampleSObjectProcessor();
+        SObjectWork work = new SObjectWork.Builder(oppsToProcess, processor).build();
 
         // Execute & Verify
-        System.assertEquals(true, SObjectWorkQueue.hasPendingWorkFor(oppsToProcess), 'Has pending work');
+        System.assertEquals(pendingIds.size(), SObjectWorkQueue.extractIdsWithPendingWork(work).size());
     }
     
     
@@ -81,13 +82,14 @@ private class SObjectWorkQueue_Test {
         
         // Setup
         final List<Id> oppsToProcess = insertOppsWithAmountZeroAndReturnIds(10);
-        
-        List<Id> failedIds = SObjectWorkTestHelper.createListOfSameIds(SObjectWorkSerializer.MAX_IDS_PER_LTXT - 2);
-        failedIds.addAll(new List<Id>{ oppsToProcess.get(4), oppsToProcess.get(8)});
+        List<Id> failedIds = new List<Id>{ oppsToProcess.get(3), oppsToProcess.get(7) };
         persistWorkWithStateAndIds(SObjectWork.State.FAILED, failedIds);
-
+        
+        SObjectProcessor processor = new SObjectWorkTestHelper.ExampleSObjectProcessor();
+        SObjectWork work = new SObjectWork.Builder(oppsToProcess, processor).build();
+        
         // Execute & Verify
-        System.assertEquals(true, SObjectWorkQueue.hasPendingWorkFor(oppsToProcess), 'Has pending work');
+        System.assertEquals(failedIds.size(), SObjectWorkQueue.extractIdsWithFailedWork(work).size());
     }
       
     
@@ -96,13 +98,15 @@ private class SObjectWorkQueue_Test {
         
         // Setup
         final List<Id> oppsToProcess = insertOppsWithAmountZeroAndReturnIds(10);
-        
-        List<Id> doneIds = SObjectWorkTestHelper.createListOfSameIds(SObjectWorkSerializer.MAX_IDS_PER_LTXT - 2);
-        doneIds.addAll(new List<Id>{ oppsToProcess.get(1), oppsToProcess.get(9)});
+        List<Id> doneIds = new List<Id>{ oppsToProcess.get(1), oppsToProcess.get(9)};
         persistWorkWithStateAndIds(SObjectWork.State.DONE, doneIds);
+        
+        SObjectProcessor processor = new SObjectWorkTestHelper.ExampleSObjectProcessor();
+        SObjectWork work = new SObjectWork.Builder(oppsToProcess, processor).build();
+        
 
         // Execute & Verify
-        System.assertEquals(false, SObjectWorkQueue.hasPendingWorkFor(oppsToProcess), 'Has pending work');
+        System.assertEquals(0, SObjectWorkQueue.extractIdsWithPendingWork(work).size());
     }
     
     
@@ -133,8 +137,7 @@ private class SObjectWorkQueue_Test {
         
         // Verify
         Integer workRecordsInQueue = [SELECT COUNT() FROM SObjectWork__c];
-        // We expect one left as the test cannot synchronize 2 Asynch things.
-        System.assertEquals(1, workRecordsInQueue);
+        System.assertEquals(0, workRecordsInQueue);
     }
     
     
@@ -168,33 +171,6 @@ private class SObjectWorkQueue_Test {
         SObjectWork__c failedRecord = failedWork.get(0);
         System.assertEquals(lastSuccessfulId, failedRecord.txt_LastSuccessfulId__c,' Last successful Id');
         System.assertNotEquals('', failedRecord.ltxt_FailedWithException__c, 'Failed with Exception');
-    }
-    
-    // Couldn't get this running 
-    //@isTest
-    private static void sendsNotificationEmailOnFailure() {
-        
-       // Setup
-        final List<Id> oppsToProcess = insertOppsWithAmountZeroAndReturnIds(10);
-        
-        final Id lastSuccessfulId = oppsToProcess.get(4);
-        
-       	SObjectProcessor processor = new SObjectWorkTestHelper.ExampleSObjectProcessor();
-        final Map<String, Object> paramsMap = new Map<String, Object>();
-        paramsMap.put('FailOnId', oppsToProcess.get(5));
-        
-        
-        // Execute
-        SObjectWork work = new SObjectWork.Builder(oppsToProcess, processor).withParams(paramsMap).build();
-        
-        Test.startTest();   
-        SObjectWorkQueue.addWork(work);
-        Test.stopTest();
-        
-        
-        // Verify
-        Integer ONE_EMAIL_SENT = 1;
-        System.assertEquals(ONE_EMAIL_SENT, Limits.getEmailInvocations());
     }
     
     

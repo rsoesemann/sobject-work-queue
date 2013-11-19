@@ -7,16 +7,14 @@ private class SObjectWork_Test {
         // Setup
         List<Id> ids = SObjectWorkTestHelper.createListOfValidIds(2);
 		SObjectProcessor processor = new SObjectWorkTestHelper.ExampleSObjectProcessor();
-		Map<String, Object> paramsMap = new Map<String, Object>();
-        paramsMap.put('SetAmount', 666);
         
         // Execute
-        SObjectWork work = new SObjectWork.Builder(ids, processor).withParams(paramsMap).build();
+        SObjectWork work = new SObjectWork.Builder(ids, processor).withParam('SetAmount', 666).build();
         
         // Verify
         System.assertEquals(ids, work.recordIds);
         System.assertEquals(processor, work.processor);
-        System.assertEquals(paramsMap.get('SetAmount'), ((Map<String, Object>) work.parameterObject).get('SetAmount'));
+        System.assertEquals(666, work.parameters.get('SetAmount'));
     }
 
 
@@ -49,11 +47,55 @@ private class SObjectWork_Test {
         
         List<Id> ids = SObjectWorkTestHelper.createListOfValidIds(2);
 		SObjectProcessor processor = new SObjectWorkTestHelper.ExampleSObjectProcessor();
-		Integer NULL_PARAM = null;
+		Map<String, Object> NULLMAP = null;
         
         // Execute
         try {
-        	SObjectWork work = new SObjectWork.Builder(ids, processor).withParams(NULL_PARAM).build();
+        	SObjectWork work = new SObjectWork.Builder(ids, processor).withParams(NULLMAP).build();
+        }
+        catch(IllegalArgumentException e) {
+        	expectedExceptionWasThrown = true;
+        }
+        
+        // Verify
+        System.assert(expectedExceptionWasThrown);
+    }
+    
+        @isTest
+    private static void constructFailsWhenPassedNullAsParameterValue() {
+        
+        // Setup
+        Boolean expectedExceptionWasThrown = false;
+        
+        List<Id> ids = SObjectWorkTestHelper.createListOfValidIds(2);
+		SObjectProcessor processor = new SObjectWorkTestHelper.ExampleSObjectProcessor();
+		String NULLOBJECT = null;
+        
+        // Execute
+        try {
+        	SObjectWork work = new SObjectWork.Builder(ids, processor).withParam('key', NULLOBJECT).build();
+        }
+        catch(IllegalArgumentException e) {
+        	expectedExceptionWasThrown = true;
+        }
+        
+        // Verify
+        System.assert(expectedExceptionWasThrown);
+    }
+    
+    @isTest
+    private static void constructFailsWhenPassedNullAsParameterKey() {
+        
+        // Setup
+        Boolean expectedExceptionWasThrown = false;
+        
+        List<Id> ids = SObjectWorkTestHelper.createListOfValidIds(2);
+		SObjectProcessor processor = new SObjectWorkTestHelper.ExampleSObjectProcessor();
+		String NULLOBJECT = null;
+        
+        // Execute
+        try {
+        	SObjectWork work = new SObjectWork.Builder(ids, processor).withParam(NULLOBJECT, 'value').build();
         }
         catch(IllegalArgumentException e) {
         	expectedExceptionWasThrown = true;
