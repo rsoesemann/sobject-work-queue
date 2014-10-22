@@ -1,5 +1,10 @@
 # SObject Work Queue #
 
+<a href="https://githubsfdeploy.herokuapp.com?owner=rsoesemann&repo=sobject-work-queue">
+  <img alt="Deploy to Salesforce"
+       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png">
+</a>
+
 Apex Batch is something like the last resort for Apex developers to circumvent limitations of the Salesforce Platform when working with "Large" data volumes.  When using Batch as the asynch backbone of a bigger system you soon find obvious drawbacks:
 
 - Jobs are put in a queue, but when that queue is full (Max. 5 concurrent batches), the job fails instead of being scheduled for later processing.
