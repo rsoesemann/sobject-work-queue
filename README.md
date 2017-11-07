@@ -23,7 +23,7 @@ We tried to build a custom queue that overcomes those drawbacks.
 - Optimistic locking : Instead of locking all many records we do not to process work on Ids that have other work already scheduled.	 	 	 
 - Work that can be run synchronously, should not be queued and processed asynch.
 
-> ![SObject Work Queue : How work is definied, enqueued and processed](https://dl.dropboxusercontent.com/u/240888/SObjectWorkQueueInfrastructure.png)
+> ![SObject Work Queue : How work is definied, enqueued and processed](https://raw.github.com/rsoesemann/sobject-work-queue/master/resources/SObjectWorkQueueInfrastructure.png)
 
 ## Architectural Components ##
 
