@@ -1,4 +1,3 @@
-@isTest
 public with sharing class SObjectWorkTestHelper {
     
     public static List<Id> createListOfValidIds(Integer howMany) {

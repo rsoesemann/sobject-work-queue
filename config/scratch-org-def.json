@@ -1,6 +1,7 @@
 {
   "orgName": "sobject-work-queue_DEV",
   "edition": "Developer",
+  "hasSampleData": true,
   "settings": {
     "lightningExperienceSettings": {
       "enableS1DesktopEnabled": true
