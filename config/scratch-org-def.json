@@ -1,0 +1,12 @@
+{
+  "orgName": "sobject-work-queue_DEV",
+  "edition": "Developer",
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true
+    },
+    "deploymentSettings": {
+      "doesSkipAsyncApexValidation": true
+    }
+  }
+}
