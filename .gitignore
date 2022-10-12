@@ -6,6 +6,7 @@
 .sfdx/
 .sf/
 .localdevserver/
+.cci/
 
 #Snyk cache
 .dccache

@@ -1,0 +1,19 @@
+- plugin: snowfakery.standard_plugins.Salesforce.SalesforceQuery
+
+- object: User
+  count: 10
+  fields:
+    FirstName: fake first_name
+    LastName: fake last_name
+    Alias: alias
+    Username:
+      fake: Username
+    Email: ${{Username}}
+    TimeZoneSidKey: America/Bogota
+    LocaleSidKey: en_US
+    EmailEncodingKey: UTF-8
+    LanguageLocaleKey: en_US
+    ProfileId:
+      SalesforceQuery.find_record:
+        from: Profile
+        where: Name='Standard User'

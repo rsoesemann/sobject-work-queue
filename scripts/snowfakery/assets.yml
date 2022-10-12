@@ -1,0 +1,12 @@
+- object: Account
+  fields:
+    Name:
+      fake: LicensePlate
+  friends:
+    - object: Asset
+      count: 2000000
+      fields:
+        Name:
+          fake: LicensePlate
+        AccountId:
+            reference: Account
