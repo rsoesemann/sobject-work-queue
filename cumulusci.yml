@@ -1,0 +1,24 @@
+minimum_cumulusci_version: '3.60.0'
+project:
+    name: sobject-work-queue
+    package:
+        name: sobject-work-queue
+        api_version: '54.0'
+    git:
+    source_format: sfdx
+
+tasks:
+    robot:
+        options:
+            suites: robot/sobject-work-queue/tests
+            options:
+                outputdir: robot/sobject-work-queue/results
+
+    robot_testdoc:
+        options:
+            path: robot/sobject-work-queue/tests
+            output: robot/sobject-work-queue/doc/sobject-work-queue_tests.html
+
+    run_tests:
+        options:
+            required_org_code_coverage_percent: 75

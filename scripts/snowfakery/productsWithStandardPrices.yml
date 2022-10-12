@@ -1,0 +1,42 @@
+- plugin: snowfakery.standard_plugins.Salesforce.SalesforceQuery
+
+# underscores only for convention
+- object: __StandardPricebook
+  just_once: True
+  fields:
+    __record:
+      SalesforceQuery.find_record:
+        from: Pricebook2
+        where: IsStandard = true
+        fields: Id, Name
+
+- object: Product2
+  count: 1500000
+  fields:
+    Name:
+      fake: LicensePlate
+    Description:
+      fake: CatchPhrase
+    ProductCode:
+      fake: LicensePlate
+    IsActive: true
+    friends:
+      - object: PricebookEntry
+        fields:
+          Product2Id:
+            reference: Product2
+          UnitPrice:
+            fake.RandomInt:
+              min: 10
+              max: 55000
+          IsActive: true
+          Pricebook2Id: ${{__StandardPricebook.__record.Id}}
+
+- object: __StandardPricebook
+  just_once: True
+  fields:
+    __record:
+      SalesforceQuery.find_record:
+        from: Pricebook2
+        where: IsStandard = true
+        fields: Id, Name

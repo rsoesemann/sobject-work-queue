@@ -1,0 +1,10 @@
+- object: Product2
+  count: 1500000
+  fields:
+    Name:
+      fake: LicensePlate
+    Description:
+      fake: CatchPhrase
+    ProductCode:
+      fake: LicensePlate
+    IsActive: true
