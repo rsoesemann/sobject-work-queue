@@ -23,7 +23,7 @@ We tried to build a custom queue that overcomes those drawbacks.
 - Optimistic locking : Instead of locking all many records we do not to process work on Ids that have other work already scheduled.	 	 	 
 - Work that can be run synchronously, should not be queued and processed asynch.
 
-> ![SObject Work Queue : How work is definied, enqueued and processed](https://raw.github.com/rsoesemann/sobject-work-queue/master/resources/SObjectWorkQueueInfrastructure.png)
+![SObject Work Queue : How work is definied, enqueued and processed](https://raw.github.com/rsoesemann/sobject-work-queue/master/resources/SObjectWorkQueueInfrastructure.png)
 
 ## Architectural Components ##
 
@@ -58,27 +58,3 @@ We tried to build a custom queue that overcomes those drawbacks.
 
 For usage examples please see the test classes especially `SObjectWorkQueue_Test` and `SObjectWorkTestHelper`.
 
-
-
-## SObject Work Queue License ##
-
-Copyright (C) 2013 UP2GO International LLC
-
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
