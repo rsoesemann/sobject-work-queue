@@ -1,4 +1,4 @@
-# SObject Work Queue [![Codacy Badge](https://api.codacy.com/project/badge/Grade/05c1be483aa944de9e5c9313c0fa6f12)](https://www.codacy.com/app/rsoesemann/sobject-work-queue?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rsoesemann/sobject-work-queue&amp;utm_campaign=Badge_Grade)
+# SObject Work Queue
 
 <a href="https://githubsfdeploy.herokuapp.com?owner=rsoesemann&repo=sobject-work-queue">
   <img alt="Deploy to Salesforce"
